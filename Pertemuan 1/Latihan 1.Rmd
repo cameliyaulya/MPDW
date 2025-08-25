@@ -7,17 +7,17 @@ output: html_document
 
 
 ```{r}
-#install.packages("forecast")
-#install.packages("tsibble")
-#install.packages("tseries")
-#install.packages("nortest")
-#install.packages("forecast")
-#install.packages("TTR")
-#install.packages("TSA")
-#install.packages("graphics")
-#install.packages("aTSA")
-#install.packages("lmtest")
-#install.packages("MLmestrics")
-#install.packages("car")
+library ("forecast")
+library ("tsibble")
+library ("tseries")
+library ("nortest")
+library ("forecast")
+library ("TTR")
+library ("TSA")
+library ("graphics")
+library ("aTSA")
+library ("lmtest")
+library ("MLmetrics")
+library ("car")
 ```
 
