@@ -18,7 +18,7 @@ library(dplyr)
 
 ```{r}
 # Import data
-data <- read_xlsx("D:/Kuliah/Semester 5/MPDW/Tugas/dataudarajkt.xlsx")
+data <- read_xlsx("D:/Kuliah/Semester 5/MPDW Kuliah/Tugas/dataudarajkt.xlsx")
 data
 ```
 
