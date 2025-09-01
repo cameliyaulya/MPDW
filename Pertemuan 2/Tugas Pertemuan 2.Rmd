@@ -18,7 +18,7 @@ library(dplyr)
 
 ```{r}
 # Import data
-data <- read_xlsx("D:/Kuliah/Semester 5/MPDW Kuliah/Tugas/dataudarajkt.xlsx")
+data <- read_xlsx("D:/Kuliah/Semester 5/MPDW2/Tugas/dataudarajkt.xlsx")
 data
 ```
 
@@ -164,6 +164,8 @@ acc_hw <- data.frame(
 acc_all <- rbind(acc_sma, acc_dma, acc_ses, acc_des, acc_hw)
 print(acc_all)
 ```
+
+Berdasarkan hasil perhitungan, metode Single Exponential Smoothing (SES) merupakan model peramalan terbaik karena menghasilkan nilai error yang paling kecil pada seluruh ukuran evaluasi (SSE, MSE, MAE, RMSE, dan MAPE).
 
 
 # 5. Plot perbandingan
