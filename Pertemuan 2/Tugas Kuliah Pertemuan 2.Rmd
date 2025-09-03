@@ -1,0 +1,289 @@
+---
+title: "Tugas Kuliah MPDW Pert 2"
+author: "Cameliya Ulya Hidayah_G1401231026"
+date: "2025-08-29"
+output: html_document
+---
+# Import Library dan Data
+
+```{r, warning=FALSE, message=FALSE}
+library(readxl)
+library(GGally)
+library(psych)
+library(car)
+library(carData)
+library(corrplot)
+library(dplyr)
+library(stargazer)
+library(olsrr)
+library(lmtest)
+library(orcutt) #untuk membuat model regresi Cochrane-Orcutt
+library(HoRM) #untuk membuat model regresi Hildreth-Lu
+```
+
+```{r}
+df <- read_xlsx("C:/Users/camel/Downloads/IPM Kota Pekanbaru.xlsx")
+df
+```
+
+# Eksplorasi Data
+
+```{r}
+pairs.panels(df)
+```
+
+```{r}
+str(df)
+```
+
+
+```{r}
+summary(df)
+colSums(is.na(df))
+```
+
+```{r}
+hist(df$IPM)
+```
+
+```{r}
+boxplot(df$IPM)
+```
+
+# Regresi
+
+```{r}
+# Misalnya model linear regresi sederhana (ubah sesuai modelmu)
+model <- lm(IPM ~ Tahun, data = df)   # atau IPM ~ variabel lain
+summary(model)
+```
+
+## Asumsi Klasik
+
+```{r}
+# Residuals
+resid <- residuals(model)
+fitted <- fitted.values(model)
+
+# 1. Normal Probability Plot (QQ Plot)
+qqnorm(sisaan, main="Normal Probability Plot of the Residuals")
+qqline(sisaan, col = "steelblue", lwd = 2)
+```
+
+
+```{r}
+# 2. Residuals vs Fitted
+plot(fitted, resid, 
+     xlab="Fitted Value", ylab="Residual",
+     main="Residuals Versus the Fitted Values")
+abline(h=0, col="red")
+```
+
+
+```{r}
+# 3. Histogram Residuals
+hist(resid, breaks=10, col="steelblue", 
+     main="Histogram of the Residuals", xlab="Residual")
+```
+
+
+```{r}
+# 4. Residuals vs Order
+plot(resid, type="o", 
+     main="Residuals Versus the Order of the Data",
+     xlab="Observation Order", ylab="Residual")
+```
+
+```{r}
+#Melihat Sisaan Menyebar Normal/Tidak
+#H0: sisaan mengikuti sebaran normal
+#H1: sisaan tidak mengikuti sebaran normal
+shapiro.test(sisaan)
+ks.test(sisaan, "pnorm", mean=mean(sisaan), sd=sd(sisaan))
+```
+
+Berdasarkan uji formal Saphiro-Wilk dan Kolmogorov-Smirnov didapatkan nilai *p-value* \> $\alpha$ (5%). Artinya, cukup bukti untuk menyatakan sisaan berdistribusi normal.
+
+```{r}
+# 5. Autocorrelation Function (ACF)
+acf(resid, main="Autocorrelation Function for Residuals")
+```
+
+
+```{r}
+# 6. Partial Autocorrelation Function (PACF)
+pacf(resid, main="Partial Autocorrelation Function for Residuals")
+```
+
+Berdasarkan plot ACF dan PACF, terlihat semua dalam rentang batas dan tidak ada lag yang signifikan. Namun, untuk lebih memastikan akan dilakukan uji formal dengan uji Durbin Watson.
+
+```{r, warning=FALSE}
+#Deteksi autokorelasi dengan uji-Durbin Watson
+#H0: tidak ada autokorelasi
+#H1: ada autokorelasi
+dwtest(model)
+```
+
+Berdasarkan hasil DW Test, didapatkan nilai $DW = 1.2344$ dan *p-value* = $0.02686$. Berdasarkan tabel Durbin-Watson diperoleh nilai $DL = 0.9771$ dan $DU = 1.331$. Nilai DW masih berada di antara nilai DL dan DU. Artinya, berada di daerah inkonklusif, tidak dapat dikatakan berada di daerah autokorelasi positif maupun bebas dari autokorelasi. Namun, dengan nilai *p-value* \< 0.05 dapat disimpulkan bahwa tolak H0, cukup bukti mengatakan adanya autokorelasi. Oleh karena itu, diperlukan penangan autokorelasi. Penanganan yang akan digunakan menggunakan dua metode, yaitu Cochrane-Orcutt dan Hildret-Lu.
+
+# Penanganan Autokorelasi
+
+## Metode Cochrane-Orcutt
+
+Penanganan metode Cochrane-Orcutt dapat dilakukan dengan bantuan packages Orcutt pada aplikasi `R` maupun secara manual. Berikut ini ditampilkan cara menggunakan bantuan `library` *packages* `Orcutt`.
+
+```{r}
+#Penanganan Autokorelasi Cochrane-Orcutt
+modelCO<-cochrane.orcutt(model)
+modelCO
+```
+
+Hasil keluaran model setelah dilakukan penanganan adalah sebagai berikut. $$y_i=-762.396132+0.417662x_t$$ Hasil juga menunjukkan bahwa nilai DW dan p-value meningkat menjadi $1.23438$ dan $0.2311$. Nilai DW sudah berada pada rentang DU \< DW \< 4-DU atau $1.331 < DW < 2.669$. Hal tersebut juga didukung dengan nilai *p-value* \> 0.05, artinya belum cukup bukti menyatakan bahwa sisaan terdapat autokorelasi pada taraf nyata 5%. Untuk nilai $ρ̂$ optimum yang digunakan adalah $0.359868$. Nilai tersebut dapat diketahui dengan *syntax* berikut.
+
+```{r}
+#Rho optimum
+rho<- modelCO$rho
+rho
+```
+
+Selanjutnya akan dilakukan transformasi secara manual dengan syntax berikut ini.
+
+```{r}
+IPM <- df$IPM
+Tahun <- df$Tahun
+```
+
+```{r}
+IPM[-1]
+```
+
+```{r}
+#Transformasi Manual
+IPM.trans<- IPM[-1]-IPM[-12]*rho
+Tahun.trans<- Tahun[-1]-Tahun[-12]*rho
+modelCOmanual<- lm(IPM.trans~Tahun.trans)
+summary(modelCOmanual)
+```
+
+Hasil model transformasi bukan merupakan model sesungguhnya. Koefisien regresi masih perlu dicari kembali mengikuti $β_0^*=β_0+ρ ̂β_0$ dan $β_1^*=β_1$.
+
+```{r}
+#Mencari Penduga Koefisien Regresi setelah Transformasi ke Persamaan Awal
+b0bintang <- modelCOmanual$coefficients[-2]
+b0 <- b0bintang/(1-rho)
+b1 <- modelCOmanual$coefficients[-1]
+b0
+b1
+```
+
+Hasil perhitungan koefisien regresi tersebut akan menghasilkan hasil yang sama dengan model yang dihasilkan menggunakan *packages*.
+
+## Metode Hildreth-Lu
+
+Penanganan kedua adalah menggunakan metode Hildreth-Lu. Metode ini akan mencari nilai SSE terkecil dan dapat dicari secara manual maupun menggunakan packages. Jika menggunakan packages, gunakan `library` *packages* `HORM`.
+
+```{r}
+library(HoRM)
+
+# ambil y dan x (satu prediktor saja)
+y <- df$IPM
+x <- df$Tahun
+
+# grid search rho 0–0.9
+r <- seq(0, 0.9, by = 0.1)
+tab <- data.frame(
+  rho = r,
+  SSE = sapply(r, function(rr) deviance(hildreth.lu(y, x, rr)))
+)
+
+tab            # tabel rho vs SSE
+rho_hat <- tab$rho[which.min(tab$SSE)]   # rho terbaik
+fit_hl  <- hildreth.lu(y, x, rho_hat)    # model final
+summary(fit_hl)
+```
+
+```{r}
+#Penanganan Autokorelasi Hildreth lu
+# Hildreth-Lu
+hildreth.lu.func<- function(r, model){
+  x <- model.matrix(model)[,-1]
+  y <- model.response(model.frame(model))
+  n <- length(y)
+  t <- 2:n
+  y <- y[t]-r*y[t-1]
+  x <- x[t]-r*x[t-1]
+  
+  return(lm(y~x))
+}
+
+#Pencariab rho yang meminimumkan SSE
+r <- c(seq(0.1,0.9, by= 0.1))
+tab <- data.frame("rho" = r, "SSE" = sapply(r, function(i){deviance(hildreth.lu.func(i, model))}))
+round(tab, 4)
+```
+
+Pertama-tama akan dicari di mana kira-kira $ρ$ yang menghasilkan SSE minimum. Pada hasil di atas terlihat $ρ$ minimum ketika 0.4. Namun, hasil tersebut masih kurang teliti sehingga akan dicari kembali $ρ$ yang lebih optimum dengan ketelitian yang lebih. Jika sebelumnya jarak antar $ρ$ yang dicari adalah 0.1, kali ini jarak antar $ρ$ adalah 0.001 dan dilakukan pada selang 0.2 sampai dengan 0.5.
+
+```{r}
+#Rho optimal di sekitar 0.4
+rOpt <- seq(0.3,0.5, by= 0.001)
+tabOpt <- data.frame("rho" = rOpt, "SSE" = sapply(rOpt, function(i){deviance(hildreth.lu.func(i, model))}))
+head(tabOpt[order(tabOpt$SSE),])
+```
+
+
+```{r}
+#Grafik SSE optimum
+par(mfrow = c(1,1))
+plot(tab$SSE ~ tab$rho , type = "l", xlab = "Rho", ylab = "SSE")
+abline(v = tabOpt[tabOpt$SSE==min(tabOpt$SSE),"rho"], lty = 2, col="red",lwd=2)
+text(x=0.360, y=0.4739343, labels = "rho=0.360", cex = 0.8)
+```
+
+Perhitungan yang dilakukan aplikasi `R` menunjukkan bahwa nilai $ρ$ optimum, yaitu saat SSE terkecil terdapat pada nilai $ρ=0.360$. Hal tersebut juga ditunjukkan pada plot. Selanjutnya, model dapat didapatkan dengan mengevaluasi nilai $ρ$ ke dalam fungsi `hildreth.lu.func`, serta dilanjutkan dengan pengujian autokorelasi dengan uji Durbin-Watson. Namun, setelah pengecekan tersebut tidak lupa koefisien regresi tersebut digunakan untuk transformasi balik. Persamaan hasil transformasi itulah yang menjadi persamaan sesungguhnya.
+
+```{r}
+#Model terbaik
+modelHL <- hildreth.lu.func(0.360, model)
+summary(modelHL)
+
+#Transformasi Balik
+cat("y = ", coef(modelHL)[1]/(1-0.360), "+", coef(modelHL)[2],"x", sep = "")
+```
+
+Setelah dilakukan tranformasi balik, didapatkan model dengan metode Hildreth-Lu sebagai berikut. $$y_i=-762.3987+0.4176635x_t$$
+
+```{r}
+#Deteksi autokorelasi
+dwtest(modelHL)
+```
+
+Hasil uji Durbin-Watson juga menunjukkan bawah nilai DW sebesar $1.7922$ berada pada selang daerah tidak ada autokorelasi, yaitu pada rentang DU \< DW \< 4-DU atau $1.331 < DW < 2.669$. Hal tersebut juga didukung oleh *p-value* sebesar $0.2312$, di mana *p-value* \> $\alpha$=5%. Artinya tak tolak $H_0$ atau belum cukup bukti menyatakan bahwa ada autokorelasi dalam data nilai IPM dengan metode Hildreth-Lu pada taraf nyata 5%.
+
+Terakhir, akan dibandingkan nilai SSE dari ketiga metode (metode awal, metode Cochrane-Orcutt, dan Hildreth-Lu).
+
+```{r}
+#Perbandingan
+sseModelawal <- anova(model)$`Sum Sq`[-1]
+sseModelCO <- anova(modelCOmanual)$`Sum Sq`[-1]
+sseModelHL <- anova(modelHL)$`Sum Sq`[-1]
+mseModelawal <- sseModelawal/length(IPM)
+mseModelCO <- sseModelCO/length(IPM)
+mseModelHL <- sseModelHL/length(IPM)
+akurasi <- matrix(c(sseModelawal,sseModelCO,sseModelHL,
+                    mseModelawal,mseModelCO,mseModelHL),nrow=2,ncol=3,byrow = T)
+colnames(akurasi) <- c("Model Awal", "Model Cochrane-Orcutt", "Model Hildreth-Lu")
+row.names(akurasi) <- c("SSE","MSE")
+akurasi
+```
+
+Berdasarkan hasil tersebut dapat diketahui bahwa hasil penanganan autokorelasi dengan metode Cochrane-Orcutt dan Hildreth-Lu memiliki SSE yang hampir sama, sebesar $0.47$ dan lebih baik dibandingkan model awal ketika autokorelasi masih terjadi, yaitu sebesar $0.5813505$.
+
+# Simpulan
+
+Autokorelasi yang terdapat pada data IPM terjadi akibat adanya korelasi di antara unsur penyusunnya. Indikator IPM yang erat hubungannya dengan perekonomian sangat rawan menjadi penyebab adanya autokorelasi. Adanya autokorelasi menyebabkan model regresi kurang baik karena akan meingkatkan galatnya. Autokorelasi dapat dideteksi secara eksploratif melalui plot sisaan, ACF, dan PACF, serta dengan uji formal Durbin-Watson. Namun, autokorelasi tersebut dapat ditangani dengan metode Cochrane-Orcutt dan Hildreth-Lu. Kedua metode menghasilkan nilai SSE yang sama, artinya keduanya baik untuk digunakan.
+
+
+
+
+
