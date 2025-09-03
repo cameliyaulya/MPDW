@@ -233,6 +233,13 @@ tabOpt <- data.frame("rho" = rOpt, "SSE" = sapply(rOpt, function(i){deviance(hil
 head(tabOpt[order(tabOpt$SSE),])
 ```
 
+```{r}
+#Rho optimal di sekitar 0.4
+rOpt <- seq(0.3,0.4, by= 0.0001)
+tabOpt <- data.frame("rho" = rOpt, "SSE" = sapply(rOpt, function(i){deviance(hildreth.lu.func(i, model))}))
+head(tabOpt[order(tabOpt$SSE),])
+```
+
 
 ```{r}
 #Grafik SSE optimum
