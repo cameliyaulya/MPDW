@@ -4,6 +4,8 @@ author: "Cameliya Ulya Hidayah_G1401231026"
 date: "2025-08-29"
 output: html_document
 ---
+
+
 # Import Library dan Data
 
 ```{r, warning=FALSE, message=FALSE}
