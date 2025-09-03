@@ -2,7 +2,9 @@
 title: "Tugas Kuliah MPDW Pert 2"
 author: "Cameliya Ulya Hidayah_G1401231026"
 date: "2025-08-29"
-output: html_document
+output: 
+  html_document:
+    rmdformats::readthedown
 ---
 
 
@@ -68,8 +70,8 @@ resid <- residuals(model)
 fitted <- fitted.values(model)
 
 # 1. Normal Probability Plot (QQ Plot)
-qqnorm(sisaan, main="Normal Probability Plot of the Residuals")
-qqline(sisaan, col = "steelblue", lwd = 2)
+qqnorm(resid, main="Normal Probability Plot of the Residuals")
+qqline(resid, col = "steelblue", lwd = 2)
 ```
 
 
@@ -100,8 +102,8 @@ plot(resid, type="o",
 #Melihat Sisaan Menyebar Normal/Tidak
 #H0: sisaan mengikuti sebaran normal
 #H1: sisaan tidak mengikuti sebaran normal
-shapiro.test(sisaan)
-ks.test(sisaan, "pnorm", mean=mean(sisaan), sd=sd(sisaan))
+shapiro.test(resid)
+ks.test(resid, "pnorm", mean=mean(resid), sd=sd(resid))
 ```
 
 Berdasarkan uji formal Saphiro-Wilk dan Kolmogorov-Smirnov didapatkan nilai *p-value* \> $\alpha$ (5%). Artinya, cukup bukti untuk menyatakan sisaan berdistribusi normal.
