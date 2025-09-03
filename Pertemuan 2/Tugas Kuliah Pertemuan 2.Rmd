@@ -292,7 +292,7 @@ Berdasarkan hasil tersebut dapat diketahui bahwa hasil penanganan autokorelasi d
 
 # Simpulan
 
-Autokorelasi yang terdapat pada data IPM terjadi akibat adanya korelasi di antara unsur penyusunnya. Indikator IPM yang erat hubungannya dengan perekonomian sangat rawan menjadi penyebab adanya autokorelasi. Adanya autokorelasi menyebabkan model regresi kurang baik karena akan meingkatkan galatnya. Autokorelasi dapat dideteksi secara eksploratif melalui plot sisaan, ACF, dan PACF, serta dengan uji formal Durbin-Watson. Namun, autokorelasi tersebut dapat ditangani dengan metode Cochrane-Orcutt dan Hildreth-Lu. Kedua metode menghasilkan nilai SSE yang sama, artinya keduanya baik untuk digunakan.
+Autokorelasi yang terdapat pada data **IPM Kota Pekanbaru Tahun 2010-2024** terjadi akibat adanya korelasi di antara unsur penyusunnya. Indikator IPM yang erat hubungannya dengan perekonomian sangat rawan menjadi penyebab adanya autokorelasi. Adanya autokorelasi menyebabkan model regresi kurang baik karena akan meingkatkan galatnya. Autokorelasi dapat dideteksi secara eksploratif melalui plot sisaan, ACF, dan PACF, serta dengan uji formal Durbin-Watson. Namun, autokorelasi tersebut dapat ditangani dengan metode Cochrane-Orcutt dan Hildreth-Lu. Kedua metode menghasilkan nilai SSE yang sama, artinya keduanya baik untuk digunakan.
 
 
 
