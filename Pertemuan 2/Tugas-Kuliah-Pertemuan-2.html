@@ -1505,8 +1505,8 @@ berikut ini.</p>
 <pre><code>##  [1] 77.71 77.94 78.16 78.42 79.32 79.69 80.01 80.66 81.35 81.32 81.58 82.06
 ## [13] 82.38 82.89</code></pre>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co">#Transformasi Manual</span></span>
-<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>IPM.trans<span class="ot">&lt;-</span> IPM[<span class="sc">-</span><span class="dv">1</span>]<span class="sc">-</span>IPM[<span class="sc">-</span><span class="dv">14</span>]<span class="sc">*</span>rho</span>
-<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>Tahun.trans<span class="ot">&lt;-</span> Tahun[<span class="sc">-</span><span class="dv">1</span>]<span class="sc">-</span>Tahun[<span class="sc">-</span><span class="dv">14</span>]<span class="sc">*</span>rho</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>IPM.trans<span class="ot">&lt;-</span> IPM[<span class="sc">-</span><span class="dv">1</span>]<span class="sc">-</span>IPM[<span class="sc">-</span><span class="dv">15</span>]<span class="sc">*</span>rho</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>Tahun.trans<span class="ot">&lt;-</span> Tahun[<span class="sc">-</span><span class="dv">1</span>]<span class="sc">-</span>Tahun[<span class="sc">-</span><span class="dv">15</span>]<span class="sc">*</span>rho</span>
 <span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>modelCOmanual<span class="ot">&lt;-</span> <span class="fu">lm</span>(IPM.trans<span class="sc">~</span>Tahun.trans)</span>
 <span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a><span class="fu">summary</span>(modelCOmanual)</span></code></pre></div>
 <pre><code>## 
@@ -1515,18 +1515,18 @@ berikut ini.</p>
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -0.28501 -0.12733 -0.03858  0.08328  0.41295 
+## -0.28432 -0.13378 -0.03047  0.08551  0.40921 
 ## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -486.25199   27.04551  -17.98 4.82e-10 ***
-## Tahun.trans    0.41628    0.02094   19.88 1.49e-10 ***
+## (Intercept) -488.03401   26.58968  -18.35 3.79e-10 ***
+## Tahun.trans    0.41766    0.02058   20.29 1.18e-10 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 0.199 on 12 degrees of freedom
-## Multiple R-squared:  0.9705, Adjusted R-squared:  0.9681 
-## F-statistic: 395.3 on 1 and 12 DF,  p-value: 1.493e-10</code></pre>
+## Residual standard error: 0.1987 on 12 degrees of freedom
+## Multiple R-squared:  0.9717, Adjusted R-squared:  0.9693 
+## F-statistic: 411.8 on 1 and 12 DF,  p-value: 1.178e-10</code></pre>
 <p>Hasil model transformasi bukan merupakan model sesungguhnya.
 Koefisien regresi masih perlu dicari kembali mengikuti <span class="math inline">\(β_0^*=β_0+ρ ̂β_0\)</span> dan <span class="math inline">\(β_1^*=β_1\)</span>.</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="co">#Mencari Penduga Koefisien Regresi setelah Transformasi ke Persamaan Awal</span></span>
@@ -1535,10 +1535,10 @@ Koefisien regresi masih perlu dicari kembali mengikuti <span class="math inline"
 <span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> modelCOmanual<span class="sc">$</span>coefficients[<span class="sc">-</span><span class="dv">1</span>]</span>
 <span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>b0</span></code></pre></div>
 <pre><code>## (Intercept) 
-##   -759.6123</code></pre>
+##   -762.3961</code></pre>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>b1</span></code></pre></div>
 <pre><code>## Tahun.trans 
-##   0.4162809</code></pre>
+##   0.4176622</code></pre>
 <p>Hasil perhitungan koefisien regresi tersebut akan menghasilkan hasil
 yang sama dengan model yang dihasilkan menggunakan
 <em>packages</em>.</p>
@@ -1722,13 +1722,13 @@ awal, metode Cochrane-Orcutt, dan Hildreth-Lu).</p>
 <span id="cb57-11"><a href="#cb57-11" tabindex="-1"></a><span class="fu">row.names</span>(akurasi) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;SSE&quot;</span>,<span class="st">&quot;MSE&quot;</span>)</span>
 <span id="cb57-12"><a href="#cb57-12" tabindex="-1"></a>akurasi</span></code></pre></div>
 <pre><code>##     Model Awal Model Cochrane-Orcutt Model Hildreth-Lu
-## SSE  0.5813505            0.47522302        0.47393434
-## MSE  0.0387567            0.03168153        0.03159562</code></pre>
+## SSE  0.5813505            0.47393433        0.47393434
+## MSE  0.0387567            0.03159562        0.03159562</code></pre>
 <p>Berdasarkan hasil tersebut dapat diketahui bahwa hasil penanganan
 autokorelasi dengan metode Cochrane-Orcutt dan Hildreth-Lu memiliki SSE
-yang sama yaitu sebesar <span class="math inline">\(0.47\)</span> dan
-lebih baik dibandingkan model awal ketika autokorelasi masih terjadi,
-yaitu sebesar <span class="math inline">\(0.5813505\)</span>.</p>
+yang hampir sama, sebesar <span class="math inline">\(0.4739343\)</span>
+dan lebih baik dibandingkan model awal ketika autokorelasi masih
+terjadi, yaitu sebesar <span class="math inline">\(0.5813505\)</span>.</p>
 </div>
 </div>
 <div id="simpulan" class="section level1">

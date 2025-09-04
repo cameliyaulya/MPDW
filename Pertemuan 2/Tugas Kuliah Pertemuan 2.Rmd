@@ -163,8 +163,8 @@ IPM[-1]
 
 ```{r}
 #Transformasi Manual
-IPM.trans<- IPM[-1]-IPM[-14]*rho
-Tahun.trans<- Tahun[-1]-Tahun[-14]*rho
+IPM.trans<- IPM[-1]-IPM[-15]*rho
+Tahun.trans<- Tahun[-1]-Tahun[-15]*rho
 modelCOmanual<- lm(IPM.trans~Tahun.trans)
 summary(modelCOmanual)
 ```
@@ -288,7 +288,7 @@ row.names(akurasi) <- c("SSE","MSE")
 akurasi
 ```
 
-Berdasarkan hasil tersebut dapat diketahui bahwa hasil penanganan autokorelasi dengan metode Cochrane-Orcutt dan Hildreth-Lu memiliki SSE yang sama yaitu sebesar $0.47$ dan lebih baik dibandingkan model awal ketika autokorelasi masih terjadi, yaitu sebesar $0.5813505$.
+Berdasarkan hasil tersebut dapat diketahui bahwa hasil penanganan autokorelasi dengan metode Cochrane-Orcutt dan Hildreth-Lu memiliki SSE yang hampir sama, sebesar $0.4739343$ dan lebih baik dibandingkan model awal ketika autokorelasi masih terjadi, yaitu sebesar $0.5813505$.
 
 # Simpulan
 
