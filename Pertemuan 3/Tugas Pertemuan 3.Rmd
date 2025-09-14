@@ -14,9 +14,9 @@ output:
 
 ```{r, echo=FALSE}
 #PACKAGES
-install.packages("dLagM") #install jika belum ada
-install.packages("dynlm") #install jika belum ada
-install.packages("MLmetrics") #install jika belum ada
+#install.packages("dLagM") #install jika belum ada
+#install.packages("dynlm") #install jika belum ada
+#install.packages("MLmetrics") #install jika belum ada
 library(dLagM)
 library(dynlm)
 library(MLmetrics)
@@ -197,37 +197,37 @@ ardlDlm(formula = NULL , data = NULL , x = NULL , y = NULL , p = 1 , q = 1 ,
 Dengan $p$ adalah integer yang mewakili panjang *lag* yang terbatas dan $q$ adalah integer yang merepresentasikan ordo dari proses *autoregressive*.
 
 ```{r}
-model.ardl <- ardlDlm(x = train$Xt, y = train$Yt, p = 1 , q = 1)
+model.ardl <- ardlDlm(x = train$no2, y = train$AQI, p = 1 , q = 1)
 summary(model.ardl)
 AIC(model.ardl)
 BIC(model.ardl)
 ```
 
 ```{r}
-model.ardl <- ardlDlm(formula = Yt ~ Xt, 
+model.ardl <- ardlDlm(formula = AQI ~ no2, 
                          data = train,p = 1 , q = 1)
 summary(model.ardl)
 AIC(model.ardl)
 BIC(model.ardl)
 ```
 
-Hasil di atas menunjukkan bahwa selain peubah $x_{t-1}$, hasil uji t menunjukkan nilai-p pada peubah $\ge0.05$ Hal ini menunjukkan bahwa peubah $x_{t-1}$ berpengaruh signifikan terhadap $y_t$, sementara $x_t$ dan $y_{t-1}$ berpengaruh signifikan terhadap $y_t$. Model keseluruhannya adalah sebagai berikut:
+Hasil di atas menunjukkan bahwa selain peubah $y_{t-1}$, hasil uji t menunjukkan nilai-p pada peubah $\ge0.05$ Hal ini menunjukkan bahwa peubah $y_{t-1}$ berpengaruh signifikan terhadap $y_t$, sementara $x_t$ dan $x_{t-1}$ tidak berpengaruh signifikan terhadap $y_t$. Model keseluruhannya adalah sebagai berikut:
 
 $$
-\hat{Y}=-8,3594+0,3563X_t+1,4557X_{t-1}+0,1408Y_{t-1}
+\hat{Y}=1.86844+52.28983X_t+-24.90414X_{t-1}+0.88147Y_{t-1}
 $$
 
 ### Peramalan dan Akurasi
 
 ```{r}
-fore.ardl <- forecast(model = model.ardl, x=test$Xt, h=5)
+fore.ardl <- forecast(model = model.ardl, x=test$no2, h=14)
 fore.ardl
 ```
 
 Data di atas merupakan hasil peramalan untuk 5 periode ke depan menggunakan Model Autoregressive dengan $p=1$ dan $q=1$.
 
 ```{r}
-mape.ardl <- MAPE(fore.ardl$forecasts, test$Yt)
+mape.ardl <- MAPE(fore.ardl$forecasts, test$AQI)
 mape.ardl
 #akurasi data training
 GoF(model.ardl)
@@ -240,7 +240,7 @@ Berdasarkan akurasi di atas, terlihat bahwa nilai MAPE keduanya tidak jauh berbe
 ```{r}
 #penentuan lag optimum
 model.ardl.opt <- ardlBoundOrders(data = data.frame(data), ic = "AIC", 
-                                  formula = Yt ~ Xt )
+                                  formula = AQI ~ no2 )
 model.ardl.opt
 min_p=c()
 for(i in 1:6){
@@ -253,7 +253,7 @@ data.frame("q_optimum" = q_opt, "p_optimum" = p_opt,
            "AIC"=model.ardl.opt$min.Stat)
 ```
 
-Dari tabel di atas, dapat terlihat bahwa nilai AIC terendah didapat ketika $p=6$ dan $q=1$, yaitu sebesar `-20,56587`. Artinya, model autoregressive optimum didapat ketika $p=6$ dan $q=1$.
+Dari tabel di atas, dapat terlihat bahwa nilai AIC terendah didapat ketika $p=14$ dan $q=6$, yaitu sebesar `133.8784`. Artinya, model autoregressive optimum didapat ketika $p=14$ dan $q=6$.
 
 Selanjutnya dapat dilakukan pemodelan dengan nilai $p$ dan $q$ optimum seperti inisialisasi di langkah sebelumnya.
 
@@ -277,16 +277,16 @@ Untuk menentukan `formula` model yang akan digunakan, tersedia fungsi tambahan y
 
 ```{r}
 #sama dengan model dlm q=1
-cons_lm1 <- dynlm(Yt ~ Xt+L(Xt),data = train.ts)
+cons_lm1 <- dynlm(AQI ~ no2+L(no2),data = train.ts)
 
 #sama dengan model ardl p=1 q=0
-cons_lm2 <- dynlm(Yt ~ Xt+L(Yt),data = train.ts)
+cons_lm2 <- dynlm(AQI ~ no2+L(AQI),data = train.ts)
 
 #sama dengan ardl p=1 q=1
-cons_lm3 <- dynlm(Yt ~ Xt+L(Xt)+L(Yt),data = train.ts)
+cons_lm3 <- dynlm(AQI ~ no2+L(no2)+L(AQI),data = train.ts)
 
 #sama dengan dlm p=2
-cons_lm4 <- dynlm(Yt ~ Xt+L(Xt)+L(Xt,2),data = train.ts)
+cons_lm4 <- dynlm(AQI ~ no2+L(no2)+L(no2,2),data = train.ts)
 ```
 
 ### Ringkasan Model
@@ -323,11 +323,11 @@ if(require("lmtest")) encomptest(cons_lm1, cons_lm2)
 
 ```
 
--   Model 1 : p-value 0.31055 (\> 0.05). Artinya, penambahan lag dari Y (`L(Yt)`) tidak memberikan peningkatan signifikan.\
-    Dengan demikian, Model 1 sudah memadai.
+-   Model 1 : p-value <2e-16 (\> 0.01). Artinya, penambahan lag dari Y (`L(Yt)`) memberikan peningkatan signifikan.\
+    Dengan demikian, Model 1 tidak cukup memadai tanpa tambahan variabel lag dari Xt.
 
--   Model 2 : p-value = 0.00505 (\< 0.01).\
-    Artinya, penambahan lag dari X (`L(Xt)`) memberikan peningkatan signifikan.Sehingga Model 2 tidak cukup memadai tanpa tambahan variabel lag dari Xt.
+-   Model 2 : p-value = 0.5153 (\> 0.05).\
+    Artinya, penambahan lag dari X (`L(Xt)`) tidak memberikan peningkatan signifikan. Sehingga Model 2 cukup memadai.
 
 #### Uji Autokorelasi Residual
 
@@ -394,13 +394,13 @@ Untuk membandingkan hasil peramalan dari berbagai model (Koyck, DLM 1, DLM 2, da
 par(mfrow=c(1,1))  # atur layout grafik tunggal
 
 # plot data aktual
-plot(test$Xt, test$Yt, type="b", col="black", ylim=c(120,250))
+plot(test$no2, test$AQI, type="b", col="black")
 
 # tambahkan garis ramalan dari masing-masing model
-points(test$Xt, fore.koyck$forecasts, col="red");   lines(test$Xt, fore.koyck$forecasts, col="red")
-points(test$Xt, fore.dlm$forecasts, col="blue");    lines(test$Xt, fore.dlm$forecasts, col="blue")
-points(test$Xt, fore.dlm2$forecasts, col="orange"); lines(test$Xt, fore.dlm2$forecasts, col="orange")
-points(test$Xt, fore.ardl$forecasts, col="green");  lines(test$Xt, fore.ardl$forecasts, col="green")
+points(test$no2, fore.koyck$forecasts, col="red");   lines(test$no2, fore.koyck$forecasts, col="red")
+points(test$no2, fore.dlm$forecasts, col="blue");    lines(test$no2, fore.dlm$forecasts, col="blue")
+points(test$no2, fore.dlm2$forecasts, col="orange"); lines(test$no2, fore.dlm2$forecasts, col="orange")
+points(test$no2, fore.ardl$forecasts, col="green");  lines(test$no2, fore.ardl$forecasts, col="green")
 
 # legenda model
 legend("topleft",
@@ -408,98 +408,24 @@ legend("topleft",
        lty=1, col=c("black","red","blue","orange","green"), cex=0.8)
 ```
 
-Berdasarkan plot perbandingan, terlihat bahwa semua model mampu mengikuti tren data aktual, meskipun dengan tingkat kedekatan yang berbeda. Model DLM 1 (biru) dan Autoregressive (hijau) cukup konsisten mendekati data aktual, sementara DLM 2 (oranye) tampak menyimpang pada awal periode sebelum kembali mendekati tren. Model Koyck (merah) terlihat paling mendekati garis data aktual secara keseluruhan.
+Berdasarkan plot perbandingan, terlihat bahwa semua model mampu mengikuti tren data aktual dengan variasi yang berbeda. Model DLM 1 (biru) cenderung memberikan prediksi lebih tinggi dibanding data aktual, terutama pada awal periode, namun mengikuti pola kenaikan dengan cukup konsisten. Model DLM 2 (oranye) lebih stabil dan mendekati data aktual di sebagian besar titik, meskipun sempat sedikit menyimpang di awal. Model Autoregressive (hijau) tampak cukup dekat dengan data aktual pada sebagian besar rentang, meskipun agak merata (flat) di beberapa titik. Sementara itu, model Koyck (merah) menunjukkan hasil prediksi yang relatif stabil dan paling mendekati data aktual secara keseluruhan dibandingkan model lain.
 
-## Pengayaan (Regresi Berganda)
-
-### Data
 
 ```{r}
-data(M1Germany)
-data1 = M1Germany[1:144,]
-data1
+n <- length(test$AQI)
+
+# plot aktual
+plot(1:n, test$AQI, type="b", col="black",
+     xlab="Periode", ylab="AQI")
+
+# tambahkan ramalan (pakai na.omit biar aman kalau ada NA)
+lines(1:length(fore.koyck$forecasts), fore.koyck$forecasts, col="red", type="b")
+lines(1:length(fore.dlm$forecasts), fore.dlm$forecasts, col="blue", type="b")
+lines(1:length(fore.dlm2$forecasts), fore.dlm2$forecasts, col="orange", type="b")
+lines(1:length(fore.ardl$forecasts), fore.ardl$forecasts, col="green", type="b")
+
+legend("topleft",
+       c("Aktual", "Koyck","DLM 1","DLM 2", "Autoregressive"),
+       lty=1, col=c("black","red","blue","orange","green"), cex=0.8)
 ```
 
-### DLM
-
-```{r}
-#Run the search over finite DLMs according to AIC values
-finiteDLMauto(formula = logprice ~ interest+logm1,
-              data = data.frame(data1), 
-              q.min = 1, q.max = 5,
-              model.type = "dlm", 
-              error.type = "AIC", trace = FALSE)
-```
-
-Fungsi akan mencoba model dengan lag minimal q=1 hingga maksimal q=5. Dari hasil, model terbaik yang ditemukan menggunakan lag q=5 dengan nilai AIC = -463.1393.
-
-```{r}
-# Model dengan q = 5 (lag sampai periode ke-5)
-model.dlmberganda = dlm(formula = logprice ~ interest + logm1,
-                        data = data.frame(data1), q = 5)
-summary(model.dlmberganda)
-
-# Model dengan q = 1 (lag sampai periode ke-1)
-model.dlmberganda2 = dlm(formula = logprice ~ interest + logm1,
-                         data = data.frame(data1), q = 1)
-summary(model.dlmberganda2)
-```
-
-### ARDL(p,q)
-
-#### Contoh: ARDL(2,3)
-
-Untuk p = 2 dan q = 3, persamaannya adalah:
-
-$$
-Y_t = \alpha + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} +
-       \beta_0 X_t + \beta_1 X_{t-1} + \beta_2 X_{t-2} + \beta_3 X_{t-3} + \varepsilon_t
-$$
-
--   **p** = orde lag untuk variabel dependen (Y).
--   **q** = orde lag untuk variabel independen (X).
-
-```{r}
-#Mencari orde lag optimum model ARDL
-ardlBoundOrders(data = data1 , formula = logprice ~ interest + logm1,
-                ic="AIC")
-
-```
-
-berdasarkan tabel 3, kombinasi terbaik adalah p = 1 &q=4
-
-```{r}
-model.ardlDlmberganda = ardlDlm(formula = logprice ~ interest + logm1,
-                        data = data.frame(data1) , p = 4 , q = 1)
-#Untuk fungsi ardlDlm() → notasinya terbalik.
-#p = lag X & q = lag Y
-summary(model.ardlDlmberganda)
-```
-
-```{r}
-#model p interest 0 p logm1 4 
-rem.p = list(interest = c(1,2,3,4))
-remove = list(p = rem.p)
-model.ardlDlmberganda2 = ardlDlm(formula = logprice ~ interest + logm1,
-                        data = data.frame(data1) , p = 4 , q = 1 ,
-                        remove = remove)
-summary(model.ardlDlmberganda2)
-```
-
-Proses selanjutnya sama dengan pemodelan menggunakan peubah tunggal.
-
-## Tugas Individu
-
-intruksi tugas
-
-1.  Gunakan dataset kualitas udara pada gdrive : <https://drive.google.com/drive/folders/18ZcJpGKzmwlw9zxGZjTtVnJV0Ufau23g?usp=drive_link>
-
-2.  Tetapkan AQI sebagai variabel dependen (Y), lalu pilih satu variabel polutan (CO, NO₂, O₃, PM10, PM2.5, atau SO₂) sebagai variabel independen (X).
-
-3.  Terapkan metode regresi dengan peubah lag yang sudah dipelajari
-
-4.  Bandingkan kinerja model, kemudian tentukan model terbaik menggunakan metrik akurasi.
-
-5.  Upload data dan tugas per individu ke GitHub pada folder Pertemuan-3 dengan format HTML bernama: Tugas-Pertemuan-3.html dan rmd
-
-6.  Deadline Pengumpulan: Kamis 18 September 2025, 23.59 WIB.
