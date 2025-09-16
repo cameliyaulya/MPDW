@@ -1,22 +1,14 @@
 ---
-title: "Pertemuan 3 - Regresi dengan Peubah Lag"
+title: "Tugas Regresi dengan Peubah Lag Pertemuan 3"
 author:
 output:
   html_document:
-    theme: yeti
-    toc: true
-    toc_float: true
-  word_document: default
-  pdf_document: default
+    rmdformats::readthedown
 ---
 
-## *Packages*
+# *Packages*
 
 ```{r, echo=FALSE}
-#PACKAGES
-#install.packages("dLagM") #install jika belum ada
-#install.packages("dynlm") #install jika belum ada
-#install.packages("MLmetrics") #install jika belum ada
 library(dLagM)
 library(dynlm)
 library(MLmetrics)
@@ -24,7 +16,7 @@ library(lmtest)
 library(car)
 ```
 
-## Impor Data
+# Import Data
 
 ```{r}
 data <- read.csv("C:/Users/camel/Downloads/NewDelhi_Air_quality.csv")
@@ -32,7 +24,7 @@ str(data)
 data
 ```
 
-## Pembagian Data
+# Pembagian Data
 
 ```{r}
 #SPLIT DATA
@@ -51,7 +43,7 @@ data.ts<-ts(data)
 
 -   **Autoregresive model** : Variabel Dependen Y dipengaruhi oleh lag dirinya sendiri (Yt-1, Yt-2, dst) dan X sekarang (Xt)
 
-## Model Koyck
+# Model Koyck
 
 Model Koyck didasarkan pada asumsi bahwa semakin jauh jarak lag peubah independen dari periode sekarang maka semakin kecil pengaruh peubah lag terhadap peubah dependen.
 
@@ -65,7 +57,7 @@ $$
 
 dengan $$V_t=u_t-\lambda u_{t-1}$$
 
-### Pemodelan
+## Pemodelan
 
 ```{r, eval=FALSE, message = FALSE, warning=FALSE, error=FALSE}
 x <- data$no2
@@ -89,7 +81,7 @@ $$
 \hat{Y_t}=1.99147+25.33442X_t+0.88020Y_{t-1}
 $$
 
-### Peramalan dan Akurasi
+## Peramalan dan Akurasi
 
 Berikut adalah hasil peramalan y untuk 5 periode kedepan menggunakan model koyck
 
@@ -102,7 +94,7 @@ mape.koyck #data test
 GoF(model.koyck)
 ```
 
-## Regression with Distributed Lag
+# Regression with Distributed Lag
 
 Pemodelan model Regression with Distributed Lag dengan `R` dapat menggunakan `dLagM::dlm()` . Fungsi umum dari `dlm` adalah sebagai berikut.
 
@@ -112,7 +104,7 @@ dlm(formula , data , x , y , q , remove )
 
 Fungsi `dlm()` akan menerapkan model lag terdistribusi dengan satu atau lebih prediktor. Nilai `x` dan `y` tidak perlu sebagai objek *time series* (`ts`). $q$ adalah integer yang mewakili panjang *lag* yang terbatas.
 
-### Pemodelan (Lag=2)
+## Pemodelan (Lag=2)
 
 ```{r}
 model.dlm <- dlm(x = train$no2,y = train$AQI , q = 2)
@@ -127,7 +119,7 @@ $$
 \hat{Y_t}=20.172+203.517X_t+-291.196X_{t-1}+240.707X_{t-2}
 $$
 
-### Peramalan dan Akurasi
+## Peramalan dan Akurasi
 
 Berikut merupakan hasil peramalan $y$ untuk 14 periode kedepan
 
@@ -140,7 +132,7 @@ mape.dlm
 GoF(model.dlm)
 ```
 
-### *Lag* Optimum
+## *Lag* Optimum
 
 ```{r}
 #penentuan lag optimum 
@@ -181,11 +173,11 @@ GoF(model.dlm2)
 
 Model tersebut merupakan model yang sangat baik dengan nilai MAPE yang kurang dari 10%.
 
-## Model Autoregressive
+# Model Autoregressive
 
 Peubah dependen dipengaruhi oleh peubah independen pada waktu sekarang, serta dipengaruhi juga oleh peubah dependen itu sendiri pada satu waktu yang lalu maka model tersebut disebut *autoregressive* (Gujarati 2004).
 
-### Pemodelan
+## Pemodelan
 
 Pemodelan Autoregressive dilakukan menggunakan fungsi `dLagM::ardlDlm()` . Fungsi tersebut akan menerapkan *autoregressive* berordo $(p,q)$ dengan satu prediktor. Fungsi umum dari `ardlDlm()` adalah sebagai berikut.
 
@@ -217,7 +209,7 @@ $$
 \hat{Y}=1.86844+52.28983X_t+-24.90414X_{t-1}+0.88147Y_{t-1}
 $$
 
-### Peramalan dan Akurasi
+## Peramalan dan Akurasi
 
 ```{r}
 fore.ardl <- forecast(model = model.ardl, x=test$no2, h=14)
@@ -235,7 +227,7 @@ GoF(model.ardl)
 
 Berdasarkan akurasi di atas, terlihat bahwa nilai MAPE keduanya tidak jauh berbeda. Artinya, model regresi dengan distribusi lag ini tidak `overfitted` atau `underfitted`
 
-### *Lag* Optimum
+## *Lag* Optimum
 
 ```{r}
 #penentuan lag optimum
@@ -257,7 +249,7 @@ Dari tabel di atas, dapat terlihat bahwa nilai AIC terendah didapat ketika $p=14
 
 Selanjutnya dapat dilakukan pemodelan dengan nilai $p$ dan $q$ optimum seperti inisialisasi di langkah sebelumnya.
 
-## Pemodelan DLM & ARDL dengan Library `dynlm`
+# Pemodelan DLM & ARDL dengan Library `dynlm`
 
 Pemodelan regresi dengan peubah *lag* tidak hanya dapat dilakukan dengan fungsi pada *packages* `dLagM` , tetapi terdapat *packages* `dynlm` yang dapat digunakan. Fungsi `dynlm` secara umum adalah sebagai berikut.
 
@@ -289,7 +281,7 @@ cons_lm3 <- dynlm(AQI ~ no2+L(no2)+L(AQI),data = train.ts)
 cons_lm4 <- dynlm(AQI ~ no2+L(no2)+L(no2,2),data = train.ts)
 ```
 
-### Ringkasan Model
+## Ringkasan Model
 
 Berikut adalah ringkasan hasil estimasi dari masing-masing model:
 
@@ -300,7 +292,7 @@ summary(cons_lm3)
 summary(cons_lm4)
 ```
 
-### SSE
+## SSE
 
 Selain ringkasan hasil, kita juga bisa menghitung nilai SSE dari masing-masing model.
 
@@ -313,7 +305,7 @@ deviance(cons_lm4)
 
 Semakin kecil nilai SSE, berarti model lebih baik dalam menyesuaikan data (karena error lebih kecil).
 
-### Ui encomptest
+## Ui encomptest
 
 langkah selanjutnya adalah membandingkan kinerja antar model. selanjutnya adalah membandingkan kinerja antar model. Salah satu pendekatan yang dapat digunakan adalah encompassing test dengan fungsi `encomptest()` dari package `lmtest`.
 
@@ -328,7 +320,6 @@ if(require("lmtest")) encomptest(cons_lm1, cons_lm2)
 
 -   Model 2 : p-value = 0.5153 (\> 0.05).\
     Artinya, penambahan lag dari X (`L(Xt)`) tidak memberikan peningkatan signifikan. Sehingga Model 2 cukup memadai.
-
 #### Uji Autokorelasi Residual
 
 ```{r}
@@ -339,7 +330,7 @@ dwtest(cons_lm3)
 dwtest(cons_lm4)
 ```
 
-#### Uji Heterogenitas
+### Uji Heterogenitas
 
 ```{r}
 bptest(cons_lm1)
@@ -354,7 +345,7 @@ bptest(cons_lm4)
 
 -    Jika p-value ≤ 0.05 → ada heteroskedastisitas.
 
-#### Uji Normalitas
+### Uji Normalitas
 
 H0: Residual berdistribusi normal.
 
@@ -373,7 +364,7 @@ shapiro.test(residuals(cons_lm4))
 
 -    Jika p-value ≤ 0.05 → tolak H0 → residual tidak normal.
 
-## Perbandingan Model
+# Perbandingan Model
 
 Membuat tabel ringkas akurasi model berdasarkan nilai MAPE (Mean Absolute Percentage Error).
 
@@ -386,7 +377,7 @@ akurasi
 
 Berdasarkan nilai MAPE, model paling optimum didapat pada Model Koyck karena memiliki nilai MAPE yang terkecil.
 
-### Plot
+## Plot
 
 Untuk membandingkan hasil peramalan dari berbagai model (Koyck, DLM 1, DLM 2, dan ARDL) dengan data aktual, dibuat grafik garis. Visualisasi ini membantu melihat seberapa dekat hasil ramalan tiap model dengan nilai aktual.
 
@@ -429,3 +420,39 @@ legend("topleft",
        lty=1, col=c("black","red","blue","orange","green"), cex=0.8)
 ```
 
+## Uji Asumsi
+
+### Uji Autokorelasi Residual
+
+```{r}
+#durbin watson
+dwtest(model.ardl$model)
+```
+
+### Uji Heterogenitas
+
+```{r}
+bptest(model.ardl$model)
+```
+
+-   Jika p-value \> 0.05 → tidak ada heteroskedastisitas
+
+<!-- -->
+
+-    Jika p-value ≤ 0.05 → ada heteroskedastisitas.
+
+### Uji Normalitas
+
+H0: Residual berdistribusi normal.
+
+H1: Residual tidak berdistribusi normal.
+
+```{r}
+shapiro.test(residuals(model.ardl$model))
+```
+
+-   Jika p-value \> 0.05 → gagal tolak H0 → residual normal.
+
+<!-- -->
+
+-    Jika p-value ≤ 0.05 → tolak H0 → residual tidak normal.
