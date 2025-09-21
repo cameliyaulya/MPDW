@@ -1303,6 +1303,7 @@ margin-left: 0 !important;
       <li><a href="#plot-pacf-2" id="toc-plot-pacf-2">Plot PACF</a></li>
       <li><a href="#plot-eacf-2" id="toc-plot-eacf-2">Plot EACF</a></li>
       <li><a href="#scatterplot-antar-lag-2" id="toc-scatterplot-antar-lag-2">Scatterplot Antar Lag</a></li>
+      <li><a href="#kesimpulan-2" id="toc-kesimpulan-2">Kesimpulan</a></li>
       </ul></li>
       </ul>
     </div>
@@ -2639,8 +2640,7 @@ simulasi memiliki plot PACF yang <em>cuts off</em>.</p>
 ## 6 x x x x x o o o o o o  o  o  o 
 ## 7 x o x x o o x x o o o  o  o  o</code></pre>
 <p>Berdasarkan pola segitiga nol pada plot EACF, terlihat bahwa segitiga
-nol berada pada ordo AR(0) dan ordo MA(1). Tapi, ada juga di ordo AR(2)
-dan ordo MA(2).</p>
+nol berada pada ordo AR(0) dan ordo MA(1).</p>
 </div>
 <div id="scatterplot-antar-lag-2" class="section level2">
 <h2>Scatterplot Antar Lag</h2>
@@ -2778,6 +2778,17 @@ yang cukup lemah antara <span class="math inline">\(Y_t\)</span> dengan
 <span class="math inline">\(Y_{t-1}\)</span>.</p>
 <div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="fu">cor</span>(yt_arma,yt_1_arma)</span></code></pre></div>
 <pre><code>## [1] 0.2003342</code></pre>
+<p>Korelasi antara <span class="math inline">\(Y_t\)</span> dengan <span class="math inline">\(Y_{t-1}\)</span> dari hasil simulasi jauh berbeda
+dengan teori, jika berdasarkan teori:</p>
+<p><span class="math display">\[
+\rho_1 = \frac{(1 - \phi_2)\theta_1 + (\phi_1 - \phi_2)\theta_2 +
+\phi_1(1 + \theta_1^2 + \theta_2^2)}
+{(1 - \phi_2)(1 + \theta_1^2 + \theta_2^2) + 2(\phi_1 -
+\phi_2)\theta_1\theta_2}
+= \frac{(1 - 0.2)(0.4) + (0.5 - 0.2)(0.6) + 0.5(1 + 0.4^2 + 0.6^2)}
+{(1 - 0.2)(1 + 0.4^2 + 0.6^2) + 2(0.5 - 0.2)(0.4)(0.6)}
+= \frac{1.26}{1.36} \approx 0.926
+\]</span></p>
 </div>
 <div id="korelasi-antara-y_t-dengan-y_t-2-2" class="section level3">
 <h3>Korelasi antara <span class="math inline">\(Y_t\)</span> dengan
@@ -2913,6 +2924,20 @@ tidak berpola antara <span class="math inline">\(Y_t\)</span> dengan
 <span class="math inline">\(Y_{t-2}\)</span>.</p>
 <div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" tabindex="-1"></a><span class="fu">cor</span>(yt_arma,yt_2_arma)</span></code></pre></div>
 <pre><code>## [1] -0.08932871</code></pre>
+<p>Nilai korelasi antara <span class="math inline">\(Y_t\)</span> dengan
+<span class="math inline">\(Y_{t-2}\)</span> dari hasil simulasi jauh
+berbeda dengan teori, jika berdasarkan teori:</p>
+<p><span class="math display">\[
+\rho_2 = \frac{(\phi_1 + \theta_1\theta_2)(1 - \phi_2) + (\phi_1^2 -
+\phi_2)(1 + \theta_1^2 + \theta_2^2) + \theta_2(\theta_1 +
+\phi_1\theta_2)}
+{(1 - \phi_2)(1 + \theta_1^2 + \theta_2^2) + 2(\phi_1 -
+\phi_2)\theta_1\theta_2}
+= \frac{(0.5 + 0.4 \times 0.6)(0.8) + (0.5^2 - 0.2)(1 + 0.4^2 + 0.6^2) +
+0.6(0.4 + 0.5 \times 0.6)}
+{(1-0.2)(1 + 0.4^2 + 0.6^2) + 2(0.5 - 0.2)(0.4)(0.6)}
+= \frac{1.088}{1.36} = 0.8
+\]</span></p>
 </div>
 <div id="korelasi-antara-y_t-dengan-y_t-3-2" class="section level3">
 <h3>Korelasi antara <span class="math inline">\(Y_t\)</span> dengan
@@ -3048,7 +3073,35 @@ yang jelas antara <span class="math inline">\(Y_t\)</span> dengan <span class="m
 korelasi yang rendah:</p>
 <div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" tabindex="-1"></a><span class="fu">cor</span>(yt_arma,yt_3_arma)</span></code></pre></div>
 <pre><code>## [1] -0.0730919</code></pre>
+<p>Nilai korelasi antara <span class="math inline">\(Y_t\)</span> dengan
+<span class="math inline">\(Y_{t-2}\)</span> dari hasil simulasi jauh
+berbeda dengan teori, jika berdasarkan teori:</p>
+<p><span class="math display">\[
+\rho_3 = \phi_1 \rho_2 + \phi_2 \rho_1
+= (0.5)(0.8) + (0.2)(0.926)
+= 0.5852
+\]</span></p>
 </div>
+</div>
+<div id="kesimpulan-2" class="section level2">
+<h2>Kesimpulan</h2>
+<p>Berdasarkan hasil analisis, model ARMA(2,2) yang dibangkitkan
+menghasilkan nilai autokorelasi empiris yang cukup berbeda dengan
+perhitungan teoritis. Hal ini menunjukkan bahwa model ARMA(2,2) yang
+digunakan belum sepenuhnya sesuai dengan pola autokorelasi data
+bangkitan, sehingga model ini tidak sepenuhnya konsisten secara
+struktural dengan proses teoritis ARMA(2,2). Selain itu, analisis dengan
+Extended Autocorrelation Function (EACF) menunjukkan bahwa segitiga nol
+pertama berada pada posisi AR(0) MA(1), yang justru mengindikasikan
+model kandidat yang lebih sederhana, yaitu MA(1). Hal ini diperkuat
+dengan pola ACF dan PACF dari data bangkitan yang sama-sama cut off pada
+lag ke-2, sehingga secara empiris lebih konsisten dengan model ARMA
+berorde rendah (misalnya AR(2) atau MA(2)), bukan ARMA(2,2). Dengan
+demikian, dapat disimpulkan bahwa meskipun model teoritis yang digunakan
+adalah ARMA(2,2), data bangkitan dan hasil analisis diagnostik (ACF,
+PACF dan EACF) menunjukkan kecocokan yang lebih baik dengan model yang
+lebih sederhana yaitu MA(1) karena nilai korelasi di lag 1 nyata
+sedangkan di lag 2 dan 3 hampir mendekati 0.</p>
 </div>
 </div>
 </div>

@@ -102,6 +102,7 @@ Berdasarkan scatterplot tersebut, dapat dilihat bahwa terdapat kecenderungan hub
 ```{r}
 cor(yt_ma,yt_1_ma)
 ```
+
 Korelasi antara $Y_t$ dengan $Y_{t-1}$ dari hasil simulasi cukup dekat dengan teori, meskipun sedikit lebih kecil yang jika berdasarkan teori:
 
 $$
@@ -359,7 +360,7 @@ Berdasarkan plot PACF tersebut, terlihat bahwa model ARMA(2,2) hasil simulasi me
 TSA::eacf(y.arma)
 ```
 
-Berdasarkan pola segitiga nol pada plot EACF, terlihat bahwa segitiga nol berada pada ordo AR(0) dan ordo MA(1). Tapi, ada juga di ordo AR(2) dan ordo MA(2).
+Berdasarkan pola segitiga nol pada plot EACF, terlihat bahwa segitiga nol berada pada ordo AR(0) dan ordo MA(1).
 
 ## Scatterplot Antar Lag
 
@@ -383,6 +384,16 @@ Berdasarkan scatterplot tersebut, terlihat bahwa ada hubungan positif yang cukup
 cor(yt_arma,yt_1_arma)
 ```
 
+Korelasi antara $Y_t$ dengan $Y_{t-1}$ dari hasil simulasi jauh berbeda dengan teori, jika berdasarkan teori:
+
+$$
+\rho_1 = \frac{(1 - \phi_2)\theta_1 + (\phi_1 - \phi_2)\theta_2 + \phi_1(1 + \theta_1^2 + \theta_2^2)}
+{(1 - \phi_2)(1 + \theta_1^2 + \theta_2^2) + 2(\phi_1 - \phi_2)\theta_1\theta_2}
+= \frac{(1 - 0.2)(0.4) + (0.5 - 0.2)(0.6) + 0.5(1 + 0.4^2 + 0.6^2)}
+{(1 - 0.2)(1 + 0.4^2 + 0.6^2) + 2(0.5 - 0.2)(0.4)(0.6)}
+= \frac{1.26}{1.36} \approx 0.926
+$$
+
 ### Korelasi antara $Y_t$ dengan $Y_{t-2}$
 
 ```{r}
@@ -403,6 +414,16 @@ Berdasarkan scatterplot tersebut, terlihat bahwa hubungan cenderung tidak berpol
 cor(yt_arma,yt_2_arma)
 ```
 
+Nilai korelasi antara $Y_t$ dengan $Y_{t-2}$ dari hasil simulasi jauh berbeda dengan teori, jika berdasarkan teori:
+
+$$
+\rho_2 = \frac{(\phi_1 + \theta_1\theta_2)(1 - \phi_2) + (\phi_1^2 - \phi_2)(1 + \theta_1^2 + \theta_2^2) + \theta_2(\theta_1 + \phi_1\theta_2)}
+{(1 - \phi_2)(1 + \theta_1^2 + \theta_2^2) + 2(\phi_1 - \phi_2)\theta_1\theta_2}
+= \frac{(0.5 + 0.4 \times 0.6)(0.8) + (0.5^2 - 0.2)(1 + 0.4^2 + 0.6^2) + 0.6(0.4 + 0.5 \times 0.6)}
+{(1-0.2)(1 + 0.4^2 + 0.6^2) + 2(0.5 - 0.2)(0.4)(0.6)}
+= \frac{1.088}{1.36} = 0.8
+$$
+
 ### Korelasi antara $Y_t$ dengan $Y_{t-3}$
 
 ```{r}
@@ -422,3 +443,17 @@ Berdasarkan scatterplot tersebut, terlihat bahwa tidak ada hubungan yang jelas a
 ```{r}
 cor(yt_arma,yt_3_arma)
 ```
+
+Nilai korelasi antara $Y_t$ dengan $Y_{t-2}$ dari hasil simulasi jauh berbeda dengan teori, jika berdasarkan teori:
+
+$$
+\rho_3 = \phi_1 \rho_2 + \phi_2 \rho_1
+= (0.5)(0.8) + (0.2)(0.926)
+= 0.5852
+$$
+
+## Kesimpulan 
+
+Berdasarkan hasil analisis, model ARMA(2,2) yang dibangkitkan menghasilkan nilai autokorelasi empiris yang cukup berbeda dengan perhitungan teoritis. Hal ini menunjukkan bahwa model ARMA(2,2) yang digunakan belum sepenuhnya sesuai dengan pola autokorelasi data bangkitan, sehingga model ini tidak sepenuhnya konsisten secara struktural dengan proses teoritis ARMA(2,2).
+Selain itu, analisis dengan Extended Autocorrelation Function (EACF) menunjukkan bahwa segitiga nol pertama berada pada posisi AR(0) MA(1), yang justru mengindikasikan model kandidat yang lebih sederhana, yaitu MA(1). Hal ini diperkuat dengan pola ACF dan PACF dari data bangkitan yang sama-sama cut off pada lag ke-2, sehingga secara empiris lebih konsisten dengan model ARMA berorde rendah (misalnya AR(2) atau MA(2)), bukan ARMA(2,2). Dengan demikian, dapat disimpulkan bahwa meskipun model teoritis yang digunakan adalah ARMA(2,2), data bangkitan dan hasil analisis diagnostik (ACF, PACF dan EACF) menunjukkan kecocokan yang lebih baik dengan model yang lebih sederhana yaitu MA(1) karena nilai korelasi di lag 1 nyata sedangkan di lag 2 dan 3 hampir mendekati 0. 
+
