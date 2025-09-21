@@ -1,8 +1,10 @@
 ---
-title: "Tugas MPDW R2"
-author: "Afiq Dzakwan Anasti - G1401231058"
-date: "`r Sys.Date()`"
-output: html_document
+title: "Tugas Pertemuan 2"
+author: "Cameliya Ulya Hidayah_G1401231026"
+date: "2025-09-09"
+output: 
+  html_document:
+    rmdformats::readthedown
 ---
 
 # 1. Import libraries, data, & time series
@@ -18,7 +20,7 @@ library(dplyr)
 
 ```{r}
 # Import data
-data <- read_xlsx("D:/Kuliah/Semester 5/MPDW2/Tugas/dataudarajkt.xlsx")
+data <- read_xlsx("D:/Kuliah/Semester 5/MPDW/Tugas/dataudarajkt.xlsx")
 data
 ```
 
