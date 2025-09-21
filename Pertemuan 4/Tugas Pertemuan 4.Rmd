@@ -4,7 +4,7 @@ author: "Cameliya Ulya Hidayah_G1401231026"
 date: "2025-09-19"
 output: 
   html_document:
-    rmdrmformats::readthedown
+    rmdformats::readthedown
 ---
 
 # White Noise
@@ -49,16 +49,15 @@ Pembangkitan model MA(2) juga dapat dilakukan dengan menerapkan fungsi `arima.si
 ma2 <- arima.sim(list(order=c(0,0,2), ma=c(0.4, 0.6)), n=300)
 ma2
 ```
-## Karakteristik MA(2)
 
-### Plot Time Series
+## Plot Time Series
 
 ```{r}
 ts.plot(ma)
 ```
 Berdasarkan plot time series, dapat dilihat bahwa data dari model MA(2) yang dibangkitkan adalah stasioner dalam rataan.
 
-### Plot ACF
+## Plot ACF
 
 ```{r}
 acf(ma,lag.max = 20)
@@ -66,7 +65,7 @@ acf(ma,lag.max = 20)
 
 Berdasarkan plot AFC tersebut, dapat dilihat bahwa plot ACF *cuts off* di lag kedua.
 
-### Plot PACF
+## Plot PACF
 
 ```{r}
 pacf(ma)
@@ -74,7 +73,7 @@ pacf(ma)
 
 Berdasarkan plot PACF, dapat dilihat bahwa plot PACF cenderung *tails off* dan membentuk gelombang lembah karena nilai teta adalah positif.
 
-### Plot EACF
+## Plot EACF
 
 ```{r}
 TSA::eacf(ma)
@@ -82,9 +81,9 @@ TSA::eacf(ma)
 
 Berdasarkan pola segitiga nol pada plot EACF, dapat dilihat bahwa segitiga nol pertama terletak pada ordo AR(0) dan ordo MA(2).
 
-### Scatterplot Antar Lag
+## Scatterplot Antar Lag
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-1}$
+### Korelasi antara $Y_t$ dengan $Y_{t-1}$
 
 ```{r}
 yt_ma <- ma[-1]
@@ -109,7 +108,7 @@ $$
 \rho_1=\frac{-\theta_1+\theta_1\theta_2}{1+\theta_1^2+\theta_2^2}=\frac{-0.4+0.4\times0.6}{1+0.4^2+0.6^2}=-0.105
 $$
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-2}$
+### Korelasi antara $Y_t$ dengan $Y_{t-2}$
 
 ```{r}
 yt_ma2 <- ma[-c(1,2)]
@@ -135,7 +134,7 @@ $$
 \rho_2=\frac{-\theta_2}{1+\theta_1^2+\theta_2^2}=\frac{-0.6}{1+0.4^2+0.6^2}=-0.394
 $$
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-3}$
+### Korelasi antara $Y_t$ dengan $Y_{t-3}$
 
 ```{r}
 yt_ma3 <- ma[-c(1,2,3)]
@@ -157,11 +156,11 @@ cor(yt_ma3,yt_3_ma)
 
 Korelasi antara $Y_t$ dengan $Y_{t-3}$ dari hasil simulasi hampir mendekati nilai teoritis yang menyatakan bahwa $\rho_k=0$ untuk k>q.
 
-### Kesimpulan
+## Kesimpulan
 
 Berdasarkan perbandingan nilai autokorelasi empiris dan teoritis pada model MA(2), yaitu ρ₁ = –0.118 vs –0.105, ρ₂ = –0.309 vs –0.395, dan ρ₃ = –0.074 vs 0, dapat dilihat bahwa meskipun nilai-nilainya cukup mendekati secara kuantitatif, terdapat ketidaksesuaian pola—terutama pada ρ₃ yang seharusnya nol. Hal ini menunjukkan bahwa meskipun ada kemiripan pada lag awal, model MA(2) belum sepenuhnya sesuai dengan pola autokorelasi data bangkitan, sehingga model ini tidak sepenuhnya konsisten secara struktural dengan proses teoritis MA(2).
 
-# AR(2)
+# Model AR(2)
 
 Dalam kasus ini, akan dibangkitkan suatu data dengan model AR(2) sebanyak 300 data yang memiliki nilai $\phi_1 = 0.5$ dan $\phi_2 = 0.2$. Rumusan model tersebut adalah sebagai berikut:
 
@@ -188,9 +187,7 @@ ar2 <- arima.sim(list(order=c(2,0,0), ar=c(0.5,0.2)), n=300)
 ar2
 ```
 
-## Karakteristik AR(2)
-
-### Plot Time Series
+## Plot Time Series
 
 ```{r}
 ts.plot(ar)
@@ -198,7 +195,7 @@ ts.plot(ar)
 
 Berdasarkan plot time series tersebut terlihat bahwa data cenderung stasioner pada rataan.
 
-### Plot ACF
+## Plot ACF
 
 ```{r}
 acf(ar)
@@ -206,7 +203,7 @@ acf(ar)
 
 Berdasarkan plot ACF tersebut. dapat diihat bahwa plot ACF cenderung *tails off* dan cenderung membentuk pola grafik sinus.
 
-### Plot PACF
+## Plot PACF
 
 ```{r}
 pacf(ar)
@@ -214,7 +211,7 @@ pacf(ar)
 
 Berdasarkan plot PACF tersebut, terlihat bahwa plot PACF *cuts off* pada lag kedua sesuai dengan model AR(2).
 
-### Plot EACF
+## Plot EACF
 
 ```{r}
 TSA::eacf(ar)
@@ -222,9 +219,9 @@ TSA::eacf(ar)
 
 Berdasarkan pola segitiga nol pada plot EACF, terlihat bahwa segitiga nol berada pada ordo AR(2) dan ordo MA(1) bisa juga ordo AR(1) dan ordo MA(3).
 
-### Scatterplot Antar Lag
+## Scatterplot Antar Lag
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-1}$
+### Korelasi antara $Y_t$ dengan $Y_{t-1}$
 
 ```{r}
 yt_ar <- ar[-1]
@@ -250,7 +247,7 @@ $$
 \rho_1=\frac{\phi_1}{1-\phi_2}=\frac{0.5}{1-0.2}=0.625
 $$
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-2}$
+### Korelasi antara $Y_t$ dengan $Y_{t-2}$
 
 ```{r}
 yt_ar2 <- ar[-c(1,2)]
@@ -276,7 +273,7 @@ $$
 \rho_2=\phi_1\rho_{k-1}+\phi_2\rho_{k-2}=\frac{\phi_2(1-\phi_2)+\phi_1^2}{1-\phi_2}=\frac{0.2(1-0.2)+0.5^2}{1-0.2}=0.5125
 $$
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-3}$
+### Korelasi antara $Y_t$ dengan $Y_{t-3}$
 
 ```{r}
 yt_ar3 <- ar[-c(1,2,3)]
@@ -302,11 +299,11 @@ $$
 \rho_3=\phi_1\rho_{k-1}+\phi_2\rho_{k-2}=\phi_1\rho_2+\phi_2\rho_1=0.5\times0.5125+0.2\times0.625=0.38125
 $$
 
-### Kesimpulan
+## Kesimpulan
 
 Meskipun nilai autokorelasi empiris hingga lag ke-3 menunjukkan kedekatan dengan teori AR(2), pola PACF yang hanya menunjukkan signifikansi pada lag ke-2 mengindikasikan bahwa struktur korelasi data bangkitan konsisten dengan model AR(2). Oleh karena itu, model AR(2) memiliki kecocokan kuantitatif dan secara struktural merepresentasikan dinamika data.
 
-# ARMA(2,2)
+# Model ARMA(2,2)
 
 Dalam kasus ini, akan dibangkitkan suatu data dengan model ARMA(2,2) sebanyak 300 data yang memiliki nilai $\phi_1 = 0.5$ dan $\phi_2 = 0.2$ serta $\theta_1 = 0.4$ dan $\theta_2 = 0.6$. Rumusan model tersebut adalah sebagai berikut:
 
@@ -332,9 +329,7 @@ arma22 <- arima.sim(list(order=c(2,0,2), ar = c(0.5,0.2), ma = c(0.4,0.6)), n=30
 arma22
 ```
 
-## Karakteristik ARMA(2,2)
-
-### Plot Time Series
+## Plot Time Series
 
 ```{r}
 ts.plot(y.arma)
@@ -342,7 +337,7 @@ ts.plot(y.arma)
 
 Berdasarkan plot time series tersebut, terlihat bahwa model ARMA(2,2) stasioner dalam rataan.
 
-### Plot ACF
+## Plot ACF
 
 ```{r}
 acf(y.arma)
@@ -350,7 +345,7 @@ acf(y.arma)
 
 Berdasarkan plot ACF tersebut, terlihat bahwa model ARMA(2,2) hasil simulasi memiliki plot ACF yang *cuts off*.
 
-### Plot PACF
+## Plot PACF
 
 ```{r}
 pacf(y.arma)
@@ -358,7 +353,7 @@ pacf(y.arma)
 
 Berdasarkan plot PACF tersebut, terlihat bahwa model ARMA(2,2) hasil simulasi memiliki plot PACF yang *cuts off*.
 
-### Plot EACF
+## Plot EACF
 
 ```{r}
 TSA::eacf(y.arma)
@@ -366,9 +361,9 @@ TSA::eacf(y.arma)
 
 Berdasarkan pola segitiga nol pada plot EACF, terlihat bahwa segitiga nol berada pada ordo AR(0) dan ordo MA(1). Tapi, ada juga di ordo AR(2) dan ordo MA(2).
 
-### Scatterplot Antar Lag
+## Scatterplot Antar Lag
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-1}$
+### Korelasi antara $Y_t$ dengan $Y_{t-1}$
 
 ```{r}
 yt_arma <- y.arma[-1]
@@ -388,7 +383,7 @@ Berdasarkan scatterplot tersebut, terlihat bahwa ada hubungan positif yang cukup
 cor(yt_arma,yt_1_arma)
 ```
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-2}$
+### Korelasi antara $Y_t$ dengan $Y_{t-2}$
 
 ```{r}
 yt_arma <- y.arma[-c(1,2)]
@@ -408,7 +403,7 @@ Berdasarkan scatterplot tersebut, terlihat bahwa hubungan cenderung tidak berpol
 cor(yt_arma,yt_2_arma)
 ```
 
-#### Korelasi antara $Y_t$ dengan $Y_{t-3}$
+### Korelasi antara $Y_t$ dengan $Y_{t-3}$
 
 ```{r}
 yt_arma <- y.arma[-c(1,2,3)]
